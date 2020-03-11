@@ -87,20 +87,18 @@ from(
 ) as result;
 
 
+
 #Part4
 
 
 #Sort the data by finding out which trainer has the strongest pokemon so that this will act as a ranking of strongest to weakest trainer.
-select pokemons.name, trainers.trainername, pokemon_trainer.pokelevel, types.name
+select pokemons.name , trainers.trainerid, pokemon_trainer.pokelevel, p1.name as "1st_Type", p2.name "2nd_Type"
 from pokemon_trainer
 inner join trainers on trainers.trainerID = pokemon_trainer.trainerID
 inner join pokemons  on pokemon_trainer.pokemon_id = pokemons.id
-inner join types on pokemons.primary_type = types.id
-order by pokemon_trainer.pokelevel DESC
-;
-
-
-
-
+inner join types p1 on pokemons.primary_type = p1.id 
+inner join types p2 on pokemons.secondary_type = p2.id
+where pokemon_trainer.pokelevel = 100
+order by pokemon_trainer.pokelevel DESC;
 
 
