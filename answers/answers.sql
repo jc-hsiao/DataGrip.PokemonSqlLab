@@ -1,0 +1,116 @@
+
+#Part2
+
+
+#What are all the types of pokemon that a pokemon can have?
+select name 
+from types;
+
+#What is the name of the pokemon with id 45?
+select name 
+from pokemons 
+where id=45; 
+
+#How many pokemon are there?
+select count(*) 
+from pokemons;
+
+#How many types are there?
+select count(*) 
+from types;
+
+#How many pokemon have a secondary type?
+select count(*) 
+from pokemons 
+where secondary_type is not null;
+
+
+#Part3
+
+
+#What is each pokemon's primary type?
+select pokemons.name, types.name
+from pokemons
+inner join types on pokemons.primary_type=types.id;
+
+#What is Rufflet's secondary type?
+select pokemons.name, types.name
+from pokemons
+inner join types on pokemons.secondary_type=types.id
+where pokemons.name = "Rufflet";
+
+#What are the names of the pokemon that belong to the trainer with trainerID 303?
+select pokemon_trainer.trainerID,trainers.trainername, GROUP_CONCAT(pokemons.name)
+from pokemon_trainer
+inner join pokemons on pokemon_id = pokemons.id
+inner join trainers on pokemon_trainer.trainerID = trainers.trainerID
+where pokemon_trainer.trainerID=303
+group by pokemon_trainer.trainerID,trainers.trainername;
+
+#How many pokemon have a secondary type Poison
+select count(pokemons.name)
+from pokemons 
+inner join types on types.id = pokemons.secondary_type
+where types.name="Poison";
+
+
+#What are all the primary types and how many pokemon have that type?
+select types.name, count(pokemons.name)
+from pokemons
+inner join types on pokemons.primary_type = types.id
+group by pokemons.primary_type;
+
+
+#How many pokemon at level 100 does each trainer with at least one level 100 pokemone have? (Hint: your query should not display a trainer
+select trainers.trainername, count(pokemon_trainer.pokemon_id)
+from pokemon_trainer
+inner join trainers on trainers.trainerID = pokemon_trainer.trainerID
+where pokemon_trainer.pokelevel = 100
+group by trainers.trainerID;
+
+
+#How many pokemon only belong to one trainer and no other?
+select count(*)
+from(
+	select count(pokemons.name) 
+	from pokemon_trainer
+	inner join pokemons on pokemons.id =  pokemon_trainer.pokemon_id
+	group by pokemon_trainer.pokemon_id
+	having count(pokemon_trainer.trainerID) = 1
+) as result;
+#this will print out those pokemon
+#select pokemons.name,  GROUP_CONCAT(pokemon_trainer.trainerID)
+#from pokemon_trainer
+#inner join pokemons on pokemons.id =  pokemon_trainer.pokemon_id
+#group by pokemon_trainer.pokemon_id
+#having count(pokemon_trainer.trainerID) = 1 ;
+
+
+
+
+#Part4
+
+
+#print  Write a query that returns the following collumns:Pokemon Name	Trainer Name	Level	Primary Type	Secondary Type
+#Sort the data by finding out which trainer has the strongest pokemon
+
+#this simply sort by pokemon level from highest to lowest
+select pokemons.name , trainers.trainerid, pokemon_trainer.pokelevel, p1.name as "1st_Type", p2.name "2nd_Type"
+from pokemon_trainer
+inner join trainers on trainers.trainerID = pokemon_trainer.trainerID
+inner join pokemons  on pokemon_trainer.pokemon_id = pokemons.id
+inner join types p1 on pokemons.primary_type = p1.id 
+inner join types p2 on pokemons.secondary_type = p2.id
+order by pokemon_trainer.pokelevel DESC;
+
+#group pokemons of each trainer, order by the pokemon average level
+select trainers.trainername, group_concat(pokemons.name)
+from pokemon_trainer
+inner join trainers on trainers.trainerID = pokemon_trainer.trainerID
+inner join pokemons  on pokemon_trainer.pokemon_id = pokemons.id
+inner join types p1 on pokemons.primary_type = p1.id 
+inner join types p2 on pokemons.secondary_type = p2.id
+group by trainers.trainerid
+#order by ;
+
+
