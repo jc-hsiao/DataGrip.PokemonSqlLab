@@ -91,14 +91,27 @@ from(
 #Part4
 
 
-#Sort the data by finding out which trainer has the strongest pokemon so that this will act as a ranking of strongest to weakest trainer.
+#print  Write a query that returns the following collumns:Pokemon Name	Trainer Name	Level	Primary Type	Secondary Type
+#Sort the data by finding out which trainer has the strongest pokemon
+
+#this simply sort by pokemon level from highest to lowest
 select pokemons.name , trainers.trainerid, pokemon_trainer.pokelevel, p1.name as "1st_Type", p2.name "2nd_Type"
 from pokemon_trainer
 inner join trainers on trainers.trainerID = pokemon_trainer.trainerID
 inner join pokemons  on pokemon_trainer.pokemon_id = pokemons.id
 inner join types p1 on pokemons.primary_type = p1.id 
 inner join types p2 on pokemons.secondary_type = p2.id
-where pokemon_trainer.pokelevel = 100
 order by pokemon_trainer.pokelevel DESC;
+
+#group pokemons of each trainer, order by the pokemon average level
+select trainers.trainername AS trainer, group_concat(pokemons.name) AS Pokemon_in_Team, AVG(pokemon_trainer.pokelevel) AS Team_Level
+from pokemon_trainer 
+inner join trainers on trainers.trainerID = pokemon_trainer.trainerID
+inner join pokemons  on pokemon_trainer.pokemon_id = pokemons.id
+inner join types p1 on pokemons.primary_type = p1.id 
+inner join types p2 on pokemons.secondary_type = p2.id
+group by trainers.trainerid
+order by AVG(pokemon_trainer.pokelevel) DESC;
+
 
 
